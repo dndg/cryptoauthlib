@@ -1,0 +1,41 @@
+# Copyright (c) 2025 DNDG srl
+# SPDX-License-Identifier: Apache-2.0
+
+config CRYPTOAUTHLIB
+    bool "Support library for Microchip secure elements"
+    help
+        This library implements the APIs required to communicate with Microchip
+        devices supported by the Crypto Authentication library. Currently only
+        devices of the following families over I2C are supported: ATECC608A
+        and ATECC608B.
+
+if CRYPTOAUTHLIB
+
+    choice CRYPTOAUTHLIB_HAL_CHOICE
+        prompt "HAL type"
+        help
+            Select the HAL type to compile
+
+        config CRYPTOAUTHLIB_HAL_I2C
+            bool "HAL I2C"
+            select I2C
+
+    endchoice
+
+    config CRYPTOAUTHLIB_NO_POLL
+        bool "Do not use polling to get device responses"
+        default n
+
+    config CRYPTOAUTHLIB_NO_HEAP
+        bool "Do not use dynamic allocation functions"
+        default n
+
+    config CRYPTOAUTHLIB_ATECC608A_SUPPORT
+        bool "Include support for ATECC608A device"
+        default n
+
+    config CRYPTOAUTHLIB_ATECC608B_SUPPORT
+        bool "Include support for ATECC608B device"
+        default n
+
+endif

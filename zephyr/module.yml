@@ -1,0 +1,4 @@
+name: cryptoauthlib
+build:
+  cmake: zephyr
+  kconfig: zephyr/Kconfig

@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <drivers/i2c.h>
+#include <zephyr/drivers/i2c.h>
 
+#include "atca_config.h"
 #include "hal/atca_hal.h"
 
 /** \defgroup hal_ Hardware abstraction layer (hal_)
@@ -17,9 +18,9 @@
 
 
 /** \brief The function return pre defined macro value for corrsponding i2c speed
- * 
+ *
  *  \param[in] speed   As input, i2c clock speed in HZ
- * 
+ *
  *  \return Zephyr I2C speed constant
  */
 static uint32_t hal_zephyr_i2c_convert_speed(const uint32_t speed)
@@ -46,9 +47,9 @@ static ATCA_STATUS hal_zephyr_i2c_configure(
     const uint32_t          speed            /**< baud rate (typically 100000 or 400000) */
 )
 {
-    uint32_t i2c_cfg = I2C_MODE_MASTER | I2C_SPEED_SET(hal_zephyr_i2c_convert_speed(speed));
+    uint32_t i2c_cfg = I2C_MODE_CONTROLLER | I2C_SPEED_SET(hal_zephyr_i2c_convert_speed(speed));
 
-    if (i2c_configure(zdev, i2c_cfg)) 
+    if (i2c_configure(zdev, i2c_cfg))
     {
         return ATCA_GEN_FAIL;
     }
@@ -111,19 +112,28 @@ ATCA_STATUS hal_i2c_post_init(ATCAIface iface)
  * \return ATCA_SUCCESS on success, otherwise an error code.
  */
 
-ATCA_STATUS hal_i2c_send(ATCAIface iface, uint8_t address, uint8_t *txdata, int txlength)
+ATCA_STATUS hal_i2c_send(ATCAIface iface, uint8_t word_address, uint8_t *txdata, int txlength)
 {
+    uint8_t buffer[txlength + 1];
+    uint8_t address = iface->mIfaceCFG->atcai2c.address >> 1;
+
     struct device * zdev = (struct device *)atgetifacehaldat(iface);
 
-    if (!zdev || (0 == txlength) || (NULL == txdata))
+    if (word_address > 0) {
+        buffer[0] = word_address;
+        memcpy(&(buffer[1]), txdata, txlength);
+        txlength += 1;
+    }
+
+    if (!zdev)
     {
         return ATCA_BAD_PARAM;
     }
-    if (i2c_write(zdev, txdata, txlength, (address >> 0x1)))
+    if (i2c_write(zdev, word_address > 0 ? buffer : txdata, txlength, address))
     {
         return ATCA_TX_FAIL;
     }
-     
+
     return ATCA_SUCCESS;
 }
 
@@ -143,7 +153,6 @@ ATCA_STATUS hal_i2c_receive(ATCAIface iface, uint8_t address, uint8_t *rxdata, u
     {
         return ATCA_BAD_PARAM;
     }
-
     if (i2c_read(zdev, rxdata, *rxlength, (address >> 0x1)))
     {
         return ATCA_RX_FAIL;
