@@ -69,7 +69,6 @@ static ATCA_STATUS hal_zephyr_i2c_configure(
  *  \param[in] cfg pointer to HAL specific configuration data that is used to initialize this HAL
  * \return ATCA_SUCCESS on success, otherwise an error code.
  */
-
 ATCA_STATUS hal_i2c_init(ATCAIface iface, ATCAIfaceCfg* cfg)
 {
     ATCA_STATUS status = ATCA_BAD_PARAM;
@@ -109,6 +108,7 @@ ATCA_STATUS hal_i2c_post_init(ATCAIface iface)
  * \param[in] word_address  device transaction type
  * \param[in] txdata        pointer to space to bytes to send
  * \param[in] txlength      number of bytes to send
+ *                          (txdata length excludes word address)
  * \return ATCA_SUCCESS on success, otherwise an error code.
  */
 
@@ -119,18 +119,18 @@ ATCA_STATUS hal_i2c_send(ATCAIface iface, uint8_t word_address, uint8_t *txdata,
 
     struct device * zdev = (struct device *)atgetifacehaldat(iface);
 
+    if (!zdev)
+    {
+        return ATCA_BAD_PARAM;
+    }
+
     if (word_address > 0) {
         buffer[0] = word_address;
         memcpy(&(buffer[1]), txdata, txlength);
         txlength += 1;
     }
 
-    if (!zdev)
-    {
-        return ATCA_BAD_PARAM;
-    }
-    if (i2c_write(zdev, word_address > 0 ? buffer : txdata, txlength, address))
-    {
+    if (i2c_write(zdev, word_address > 0 ? buffer : txdata, txlength, address) != 0) {
         return ATCA_TX_FAIL;
     }
 

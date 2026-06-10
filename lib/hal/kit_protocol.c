@@ -3,7 +3,7 @@
  *
  * \brief  Microchip Crypto Auth hardware interface object
  *
- * \copyright (c) 2015-2020 Microchip Technology Inc. and its subsidiaries.
+ * \copyright (c) 2015-2026 Microchip Technology Inc. and its subsidiaries.
  *
  * \page License
  *
@@ -32,6 +32,7 @@
 #include "atca_compiler.h"
 #include "kit_protocol.h"
 #include "atca_helpers.h"
+#include "cryptoauthlib.h"
 
 #ifdef __COVERITY__
 #pragma coverity compliance block \
@@ -50,6 +51,7 @@
 /* Constants */
 #define KIT_MAX_SCAN_COUNT      8
 #define KIT_MAX_TX_BUF          32
+#define KIT_TA_WORDADD_SEND_LEN 20
 
 #ifndef strnchr
 // Local implementation of strnchr if it doesn't exist in the system
@@ -79,45 +81,59 @@ const char * kit_id_from_devtype(ATCADeviceType devtype)
 
     switch (devtype)
     {
+#ifdef ATCA_ATSHA204A_SUPPORT
     case ATSHA204A:
         device_type = "SHA204A";
         break;
+#endif
+#ifdef ATCA_ATECC108A_SUPPORT
     case ATECC108A:
         device_type = "ECC108A";
         break;
+#endif
+#ifdef ATCA_ATECC508A_SUPPORT
     case ATECC508A:
         device_type = "ECC508A";
         break;
+#endif
+#ifdef ATCA_ATECC608_SUPPORT
     case ATECC608:
         device_type = "ECC608";
         break;
+#endif
+#ifdef ATCA_ATSHA206A_SUPPORT
     case ATSHA206A:
         device_type = "SHA206A";
         break;
-    case TA100:
-        device_type = "TA100";
-        break;
-    case TA101:
-        device_type = "TA101";
-        break;
+#endif
+#ifdef ATCA_ECC204_SUPPORT
     case ECC204:
         device_type = "ECC204";
         break;
+#endif
+#ifdef ATCA_ECC206_SUPPORT
     case ECC206:
         device_type = "ECC206";
         break;
+#endif
+#ifdef ATCA_TA010_SUPPORT
     case TA010:
         device_type = "TA010";
         break;
+#endif
+#ifdef ATCA_SHA104_SUPPORT
     case SHA104:
         device_type = "SHA104";
-        break;
-    case SHA105:
-        device_type = "SHA105";
         break;
     case SHA106:
         device_type = "SHA106";
         break;
+#endif
+#ifdef ATCA_SHA105_SUPPORT
+    case SHA105:
+        device_type = "SHA105";
+        break;
+#endif
     case RNG90:
         device_type = "RNG90";
         break;
@@ -220,7 +236,7 @@ ATCA_STATUS kit_phy_send(ATCAIface iface, uint8_t* txdata, int txlength)
     }
 
 #ifdef KIT_DEBUG
-    printf("Kit Send (%d): %s", txlength, txdata);
+    (void)printf("Kit Send (%d): %s", txlength, txdata);
 #endif
 
     bytes_left = txlength;
@@ -344,7 +360,7 @@ ATCA_STATUS kit_phy_receive(ATCAIface iface, uint8_t* rxdata, int* rxsize)
     }
 
 #ifdef KIT_DEBUG
-    printf("Kit Recv (%d): %s", *rxsize, rxdata);
+    (void)printf("Kit Recv (%d): %s", *rxsize, rxdata);
 #endif
 
     return ATCA_SUCCESS;
@@ -544,18 +560,22 @@ ATCA_STATUS kit_post_init(ATCAIface iface)
  */
 static ATCA_STATUS kit_ta_send_to_receive(ATCAIface iface, uint8_t word_address, uint16_t* rxsize)
 {
-    ATCA_STATUS status;
+    ATCA_STATUS status = ATCA_BAD_PARAM;
     char send_instrcode[] = "T:receive(%02X%02X%02X)\n";
-    char txbuf[KIT_MAX_TX_BUF];
+    char txbuf[KIT_TA_WORDADD_SEND_LEN] = {0};
     int txbuf_size = (int)sizeof(txbuf);
+    int cpy_len = 0;
 
     // Get instruction code and response length
-    (void)snprintf(txbuf, sizeof(txbuf), send_instrcode, word_address, (uint8_t)((*rxsize >> 8) & 0xFFU), (uint8_t)(*rxsize & 0xFFU));
-    txbuf[sizeof(txbuf) - 1u] = (char)'\0';
+    cpy_len = snprintf(txbuf, sizeof(txbuf), send_instrcode, word_address, (uint8_t)((*rxsize >> 8) & 0xFFU), (uint8_t)(*rxsize & 0xFFU));
+    if((cpy_len > 0) && (cpy_len < KIT_TA_WORDADD_SEND_LEN))
+    {
+        txbuf[sizeof(txbuf) - 1u] = (char)'\0';
 
-    // Send the word address bytes
-    status = kit_phy_send(iface, (uint8_t*)txbuf, txbuf_size);
-
+        // Send the word address bytes
+        status = kit_phy_send(iface, (uint8_t*)txbuf, txbuf_size);
+    }
+    
     return status;
 }
 
@@ -582,7 +602,7 @@ static ATCA_STATUS kit_ta_receive_send_rsp(ATCAIface iface)
 
 #ifdef KIT_DEBUG
     // Print the bytes
-    printf("Kit Read: %s\r", reply);
+    (void)printf("Kit Read: %s\r", reply);
 #endif
 
     // Unwrap from kit protocol
@@ -641,7 +661,7 @@ ATCA_STATUS kit_send(ATCAIface iface, uint8_t word_address, uint8_t* txdata, int
 
     #ifdef KIT_DEBUG
         // Print the bytes
-        printf("\nKit Write: %s", pkitbuf);
+        (void)printf("\nKit Write: %s", pkitbuf);
     #endif
 
         // Send the bytes
@@ -720,10 +740,10 @@ ATCA_STATUS kit_receive(ATCAIface iface, uint8_t word_address, uint8_t* rxdata, 
 
     #ifdef KIT_DEBUG
         // Print the bytes
-        printf("Kit Read: %s\r", pkitbuf);
+        (void)printf("Kit Read: %s\r", pkitbuf);
     #endif
 
-        // Unwrap from kit protocol        
+        // Unwrap from kit protocol
         dataSize = (int)*rxsize;
         *rxsize = 0;
         if (ATCA_SUCCESS != (status = kit_parse_rsp(pkitbuf, nkitbuf, kitstatus, rxdata, &dataSize)))
@@ -766,7 +786,7 @@ ATCA_STATUS kit_wake(ATCAIface iface)
 
 #ifdef KIT_DEBUG
     // Print the bytes
-    printf("\nKit Write: %s", wake);
+    (void)printf("\nKit Write: %s", wake);
 #endif
 
     // Receive the reply to wake "00(04...)\n"
@@ -778,7 +798,7 @@ ATCA_STATUS kit_wake(ATCAIface iface)
 
 #ifdef KIT_DEBUG
     // Print the bytes
-    printf("Kit Read: %s\n", reply);
+    (void)printf("Kit Read: %s\n", reply);
 #endif
 
     // Unwrap from kit protocol
@@ -812,7 +832,7 @@ ATCA_STATUS kit_idle(ATCAIface iface)
 
 #ifdef KIT_DEBUG
     // Print the bytes
-    printf("\nKit Write: %s", idle);
+    (void)printf("\nKit Write: %s", idle);
 #endif
 
     // Receive the reply to sleep "00()\n"
@@ -824,7 +844,7 @@ ATCA_STATUS kit_idle(ATCAIface iface)
 
 #ifdef KIT_DEBUG
     // Print the bytes
-    printf("Kit Read: %s\r", reply);
+    (void)printf("Kit Read: %s\r", reply);
 #endif
 
     // Unwrap from kit protocol
@@ -859,7 +879,7 @@ ATCA_STATUS kit_sleep(ATCAIface iface)
 
 #ifdef KIT_DEBUG
     // Print the bytes
-    printf("\nKit Write: %s", sleep);
+    (void)printf("\nKit Write: %s", sleep);
 #endif
 
     // Receive the reply to sleep "00()\n"
@@ -871,7 +891,7 @@ ATCA_STATUS kit_sleep(ATCAIface iface)
 
 #ifdef KIT_DEBUG
     // Print the bytes
-    printf("Kit Read: %s\r", reply);
+    (void)printf("Kit Read: %s\r", reply);
 #endif
 
     // Unwrap from kit protocol

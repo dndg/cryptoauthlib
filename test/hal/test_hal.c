@@ -2,7 +2,7 @@
  * \file
  * \brief Tests for the cryptoauthlib talib API
  *
- * \copyright (c) 2015-2023 Microchip Technology Inc. and its subsidiaries.
+ * \copyright (c) 2015-2026 Microchip Technology Inc. and its subsidiaries.
  *
  * \page License
  *
@@ -57,9 +57,9 @@ const char* TEST_GROUP_hal = "hal";
 TEST_SETUP(hal)
 {
 #ifdef ATCA_PRINTF
-    printf("\n");
-    fflush(stdout);
-    fflush(stderr);
+    (void)printf("\n");
+    (void)fflush(stdout);
+    (void)fflush(stderr);
 #endif
 
     UnityMalloc_StartTest();

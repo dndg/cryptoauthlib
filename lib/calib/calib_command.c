@@ -9,7 +9,7 @@
  * The caller should first fill in the parameters required in the ATCAPacket parameter given to the command.
  * The command builder will deal with the mechanics of creating a valid packet using the parameter information.
  *
- * \copyright (c) 2015-2020 Microchip Technology Inc. and its subsidiaries.
+ * \copyright (c) 2015-2026 Microchip Technology Inc. and its subsidiaries.
  *
  * \page License
  *
@@ -487,7 +487,7 @@ ATCA_STATUS atSign(ATCADeviceType device_type, ATCAPacket *packet)
     // Set the opcode & parameters
     packet->opcode = ATCA_SIGN;
     packet->txsize = SIGN_COUNT;
-    if ((ECC204 == device_type) || (TA010 == device_type))
+    if ((ECC204 == device_type) || (ECC206 == device_type) || (TA010 == device_type))
     {
         packet->txsize += ATCA_SHA_DIGEST_SIZE;
     }
@@ -707,7 +707,7 @@ void atCRC(size_t length, const uint8_t *data, uint8_t *crc_le)
 {
     size_t counter;
     uint16_t crc_register = 0;
-    uint16_t polynom = 0x8005;
+    uint16_t polynom = 0x8005u;
     uint8_t shift_register;
     uint8_t data_bit, crc_bit;
 
@@ -818,6 +818,8 @@ bool atIsECCFamily(ATCADeviceType device_type)
     case ATECC608:
     /* fallthrough */
     case ECC204:
+    /* fallthrough */
+    case ECC206:
     /* fallthrough */
     case TA010:
         is_ecc_family = true;

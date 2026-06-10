@@ -8,7 +8,7 @@
  * \note List of devices that support this command - ATSHA204A, ATECC108A,
  *       ATECC508A, ATECC608A/B
  *
- * \copyright (c) 2024 Microchip Technology Inc. and its subsidiaries.
+ * \copyright (c) 2015-2026 Microchip Technology Inc. and its subsidiaries.
  *
  * \page License
  *
@@ -87,7 +87,7 @@ void calib_packet_free(ATCAPacket* packet)
     {
         if (&calib_packet_cache[i].packet_pool == packet) 
         {
-            memset(&calib_packet_cache[i].packet_pool, 0x00, sizeof(ATCAPacket)); 
+            (void)memset(&calib_packet_cache[i].packet_pool, 0x00, sizeof(ATCAPacket)); 
             calib_packet_cache[i].used = false; 
             break;
         }

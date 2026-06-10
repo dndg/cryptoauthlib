@@ -2,7 +2,7 @@
  * \file
  * \brief Tests for the cryptoauthlib Basic API
  *
- * \copyright (c) 2015-2020 Microchip Technology Inc. and its subsidiaries.
+ * \copyright (c) 2015-2026 Microchip Technology Inc. and its subsidiaries.
  *
  * \page License
  *
@@ -90,7 +90,7 @@ int run_basic_tests(int argc, char* argv[])
     }
     else
     {
-        printf("Device is NOT Selected... Select device before running tests!");
+        (void)printf("Device is NOT Selected... Select device before running tests!");
         return -1;
     }
 }

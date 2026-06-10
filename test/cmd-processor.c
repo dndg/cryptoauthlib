@@ -1,7 +1,7 @@
 /** \file
  * \brief simple command processor for test console
  *
- * \copyright (c) 2015-2020 Microchip Technology Inc. and its subsidiaries.
+ * \copyright (c) 2015-2026 Microchip Technology Inc. and its subsidiaries.
  *
  * \page License
  *
@@ -45,14 +45,10 @@
 #include "atcacert/test_atcacert.h"
 #endif
 
-#if ATCA_TA_SUPPORT && !LIBRARY_USAGE_EN_CHECK
-#include "api_talib/test_talib.h"
-#endif
 
 /* Host side Cryptographic API Testing */
 #include "api_crypto/test_crypto.h"
 
-#ifndef LIBRARY_USAGE_EN
 /* Common API Testing - atcab_ is the classic Cryptoauthlib API */
 #include "api_atcab/test_atcab.h"
 
@@ -61,7 +57,6 @@
 
 /* Hal layer testing */
 #include "hal/test_hal.h"
-#endif
 
 /* JWT Support */
 #include "jwt/test_jwt.h"
@@ -88,6 +83,9 @@ static t_menu_info mas_menu_info[] =
 #ifdef ATCA_ECC204_SUPPORT
     { "ecc204",    "Set Target Device to ECC204",                   select_device                        },
 #endif
+#ifdef ATCA_ECC206_SUPPORT
+    { "ecc206",    "Set Target Device to ECC206",                   select_device                        },
+#endif
 #ifdef ATCA_TA010_SUPPORT
     { "ta010",     "Set Target Device to TA010",                    select_device                        },
 #endif
@@ -103,18 +101,10 @@ static t_menu_info mas_menu_info[] =
 #ifdef ATCA_ATECC608_SUPPORT
     { "ecc608",      "Set Target Device to ATECC608",               select_device                        },
 #endif
-#ifdef ATCA_TA100_SUPPORT
-    { "ta100",    "Set Target Device to TA100",                     select_device                        },
-#endif
-#ifdef ATCA_TA101_SUPPORT
-    { "ta101",    "Set Target Device to TA101",                     select_device                        },
-#endif
-#ifndef LIBRARY_USAGE_EN
     { "info",     "Get the Chip Revision",                          info                                 },
     { "sernum",   "Get the Chip Serial Number",                     read_sernum                          },
     { "readcfg",  "Read the Config Zone",                           read_config                          },
     { "hal",      "Tests hal drivers functionality",                hal_tests                            },
-#endif
     { "rand",     "Generate Some Random Numbers",                   do_randoms                           },
     { "lockstat", "Zone Lock Status",                               lock_status                          },
 #ifdef ATCA_TEST_LOCK_ENABLE
@@ -151,16 +141,6 @@ static t_menu_info mas_menu_info[] =
 #endif
 #if ATCA_CA_SUPPORT
     { "calib",      "Run calib api tests",                          run_calib_tests                      },
-#endif
-#if ATCA_TA_SUPPORT
-    { "config",    "Create testing handles in TA100 device",        talib_configure_device               },
-    { "handles",   "Print info for stored handles in TA100 device", talib_config_print_handles           },
-    { "clear",     "Delete Handles",                                talib_config_clear_handles           },
-    { "talib",     "Run talib tests",                               run_talib_tests                      },
-#ifdef TALIB_FCE_SUPPORT
-    { "fce",       "Run FCE test",                                  talib_fce_cmd                        },
-#endif
-    { "power",     "Change device power state",                     talib_power_cmd                      },
 #endif
 #if defined(_WIN32) || defined(__linux__) || defined(__APPLE__)
     { "exit",     "Exit the test application",                      call_exit                            },
@@ -226,7 +206,7 @@ static int run_cmd(t_menu_info* menu_item, int argc, char* argv[])
 {
     int ret = -1;
 
-    printf("\n");
+    (void)printf("\n");
     if (argc && argv)
     {
         if (0 <= (ret = process_options(argc - 1, &argv[1])))
@@ -247,13 +227,13 @@ static int run_cmd(t_menu_info* menu_item, int argc, char* argv[])
 
     if (!menu_item->menu_cmd)
     {
-        printf("syntax error in command: %s", argv[0]);
+        (void)printf("syntax error in command: %s", argv[0]);
     }
 
     /* Reset quiet mode for the next command */
     g_atca_test_quiet_mode = false;
 
-    printf("\n");
+    (void)printf("\n");
     return ret;
 }
 
@@ -305,8 +285,8 @@ int main(int argc, char* argv[])
 
         while (!exit_code)
         {
-            printf("$ ");
-            fflush(stdout);
+            (void)printf("$ ");
+            (void)fflush(stdout);
             if (fgets(buffer, sizeof(buffer), stdin))
             {
                 parse_cmd(buffer, sizeof(buffer));
@@ -329,7 +309,7 @@ int processCmd(void)
     cmd[i] = '\0';
     //printf("\r\n%s\r\n", command );
     parse_cmd(cmd, sizeof(cmd));
-    printf("$ ");
+    (void)printf("$ ");
 
     return ATCA_SUCCESS;
 }
@@ -345,7 +325,7 @@ void atca_test_task(void)
 
         if (ch)
         {
-            printf("%c", ch); // echo to output
+            (void)printf("%c", ch); // echo to output
             if (ch == 0x0d || ch == 0x0a)
             {
                 processCmd();
@@ -367,10 +347,10 @@ static int help(int argc, char* argv[])
 
     uint8_t index = 0;
 
-    printf("Usage:\r\n");
+    (void)printf("Usage:\r\n");
     while (mas_menu_info[index].menu_cmd != NULL)
     {
-        printf("%s - %s\r\n", mas_menu_info[index].menu_cmd, mas_menu_info[index].menu_cmd_description);
+        (void)printf("%s - %s\r\n", mas_menu_info[index].menu_cmd, mas_menu_info[index].menu_cmd_description);
         index++;
     }
 

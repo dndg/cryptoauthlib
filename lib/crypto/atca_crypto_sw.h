@@ -2,7 +2,7 @@
  * \file
  * \brief Common defines for CryptoAuthLib software crypto wrappers.
  *
- * \copyright (c) 2015-2020 Microchip Technology Inc. and its subsidiaries.
+ * \copyright (c) 2015-2026 Microchip Technology Inc. and its subsidiaries.
  *
  * \page License
  *
@@ -62,6 +62,12 @@ typedef struct atcac_sha1_ctx
 } atcac_sha1_ctx_t;
 #else
 struct atcac_sha1_ctx;
+#endif
+
+struct atcacert_def_s;
+
+#if ATCAC_CERT_ADD_EN && ATCACERT_COMPCERT_EN
+ATCA_STATUS atcac_sw_cert_add(void * cert, const struct atcacert_def_s * cert_def);
 #endif
 
 #if defined(ATCA_BUILD_SHARED_LIBS) || defined(ATCA_HEAP)
@@ -135,18 +141,13 @@ ATCA_STATUS atcac_sw_sha2_512_update(struct atcac_sha2_512_ctx* ctx, const uint8
 ATCA_STATUS atcac_sw_sha2_512_finish(struct atcac_sha2_512_ctx* ctx, uint8_t digest[ATCA_SHA2_512_DIGEST_SIZE]);
 #endif /* ATCAC_SHA512_EN || ATCA_CRYPTO_SHA512_EN */
 
-#if ATCAC_SHA256_HMAC_EN || ATCA_CRYPTO_SHA2_HMAC_EN || LIBRARY_BUILD_EN_CHECK
+#if ATCAC_SHA256_HMAC_EN || ATCA_CRYPTO_SHA2_HMAC_EN
 #if ATCA_CRYPTO_SHA2_HMAC_EN
 typedef struct atcac_hmac_ctx
 {
     atcac_sha2_256_ctx_t* sha256_ctx;
     uint8_t               ipad[ATCA_SHA2_256_BLOCK_SIZE];
     uint8_t               opad[ATCA_SHA2_256_BLOCK_SIZE];
-} atcac_hmac_ctx_t;
-#elif LIBRARY_BUILD_EN_CHECK
-typedef struct atcac_hmac_ctx
-{
-    uint8_t ctx[MAX_HMAC_CTX_SIZE];
 } atcac_hmac_ctx_t;
 #else
 struct atcac_hmac_ctx;
@@ -161,20 +162,11 @@ ATCA_STATUS atcac_sha256_hmac_init(struct atcac_hmac_ctx* ctx, struct atcac_sha2
                                    const uint8_t* key, const uint8_t key_len);
 ATCA_STATUS atcac_sha256_hmac_update(struct atcac_hmac_ctx* ctx, const uint8_t* data, size_t data_size);
 ATCA_STATUS atcac_sha256_hmac_finish(struct atcac_hmac_ctx* ctx, uint8_t* digest, size_t* digest_len);
-#endif /* ATCAC_SHA256_HMAC_EN || ATCA_CRYPTO_SHA2_HMAC_EN || LIBRARY_BUILD_EN_CHECK */
+#endif /* ATCAC_SHA256_HMAC_EN || ATCA_CRYPTO_SHA2_HMAC_EN */
 
 
-#if ATCAC_AES_CMAC_EN || ATCA_CRYPTO_AES_CMAC_EN
-#if ATCA_CRYPTO_AES_CMAC_EN
-/* Dummy structure for memory reservation */
-typedef struct atcac_aes_cmac_ctx 
-{
-    uint8_t ctx[MAX_AES_CMAC_CTX_SIZE];
-}atcac_aes_cmac_ctx_t;
-#else
+#if ATCAC_AES_CMAC_EN 
 struct atcac_aes_cmac_ctx;
-#endif
-
 #if defined(ATCA_BUILD_SHARED_LIBS) || defined(ATCA_HEAP)
 struct atcac_aes_cmac_ctx * atcac_aes_cmac_ctx_new(void);
 void atcac_aes_cmac_ctx_free(struct atcac_aes_cmac_ctx * ctx);
@@ -183,20 +175,11 @@ void atcac_aes_cmac_ctx_free(struct atcac_aes_cmac_ctx * ctx);
 ATCA_STATUS atcac_aes_cmac_init(struct atcac_aes_cmac_ctx* ctx, const uint8_t* key, const uint8_t key_len);
 ATCA_STATUS atcac_aes_cmac_update(struct atcac_aes_cmac_ctx* ctx, const uint8_t* data, const size_t data_size);
 ATCA_STATUS atcac_aes_cmac_finish(struct atcac_aes_cmac_ctx* ctx, uint8_t* cmac, size_t* cmac_size);
-#endif /* ATCAC_AES_CMAC_EN || ATCA_CRYPTO_AES_CMAC_EN */
+#endif /* ATCAC_AES_CMAC_EN */
 
 
-#if ATCAC_AES_GCM_EN || ATCA_CRYPTO_AES_GCM_EN
-#if ATCA_CRYPTO_AES_GCM_EN
-/* Dummy structure for memory reservation */
-typedef struct atcac_aes_gcm_ctx 
-{
-    uint8_t ctx[MAX_AES_GCM_CTX_SIZE];
-}atcac_aes_gcm_ctx_t;
-#else
+#if ATCAC_AES_GCM_EN
 struct atcac_aes_gcm_ctx;
-#endif
-
 #if defined(ATCA_BUILD_SHARED_LIBS) || defined(ATCA_HEAP)
 struct atcac_aes_gcm_ctx * atcac_aes_gcm_ctx_new(void);
 void atcac_aes_gcm_ctx_free(struct atcac_aes_gcm_ctx * ctx);
@@ -235,7 +218,7 @@ ATCA_STATUS atcac_pk_init(struct atcac_pk_ctx* ctx, const uint8_t* buf, size_t b
 ATCA_STATUS atcac_pk_init_pem(struct atcac_pk_ctx* ctx, const uint8_t* buf, size_t buflen, bool pubkey);
 ATCA_STATUS atcac_pk_free(struct atcac_pk_ctx* ctx);
 ATCA_STATUS atcac_pk_public(struct atcac_pk_ctx* ctx, uint8_t* buf, size_t* buflen);
-ATCA_STATUS atcac_pk_sign(struct atcac_pk_ctx* ctx, const uint8_t* digest, size_t dig_len, uint8_t* signature, size_t* sig_len);
+ATCA_STATUS atcac_pk_sign(struct atcac_pk_ctx* ctx, const uint8_t* digest, size_t dig_len, uint8_t* signature, size_t sig_buf_size, size_t* sig_len);
 ATCA_STATUS atcac_pk_verify(struct atcac_pk_ctx* ctx, const uint8_t* digest, size_t dig_len, const uint8_t* signature, size_t sig_len);
 ATCA_STATUS atcac_pk_derive(struct atcac_pk_ctx* private_ctx, struct atcac_pk_ctx* public_ctx, uint8_t* buf, size_t* buflen);
 #endif /* ATCAC_PKEY_EN */

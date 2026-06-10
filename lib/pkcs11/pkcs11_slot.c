@@ -8,7 +8,7 @@
  * by the device specification would be enumerated seperately as related to
  * specific supported mechanisms as cryptographic "objects".
  *
- * \copyright (c) 2015-2020 Microchip Technology Inc. and its subsidiaries.
+ * \copyright (c) 2015-2026 Microchip Technology Inc. and its subsidiaries.
  *
  * \page License
  *
@@ -120,7 +120,7 @@ CK_VOID_PTR pkcs11_slot_initslots(CK_ULONG pulCount)
 
     if (NULL != slot_ctx_array)
     {
-        (void)memset(slot_ctx_array, 0, sizeof(pkcs11_slot_ctx) * pulCount);
+        (void)pkcs11_util_memset(slot_ctx_array, sizeof(pkcs11_slot_ctx) * pulCount, 0, sizeof(pkcs11_slot_ctx) * pulCount);
     }
     return slot_ctx_array;
 #endif
@@ -325,12 +325,7 @@ CK_RV pkcs11_slot_init(CK_SLOT_ID slotID)
             }
             else
             {
-#if ATCA_TA_SUPPORT
-                /* Iterate through all objects and attach handle info */
-                status = pkcs11_object_load_handle_info(slot_ctx->device_ctx, lib_ctx);
-#else
                 status = ATCA_GEN_FAIL;
-#endif
             }
         }
 

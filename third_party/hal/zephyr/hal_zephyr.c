@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "hal/atca_hal.h"
-
 #include <zephyr/kernel.h>
 
+#include "hal/atca_hal.h"
 
 #ifndef ATCA_MUTEX_TIMEOUT
 #define ATCA_MUTEX_TIMEOUT  K_FOREVER
@@ -41,7 +40,7 @@ void    hal_free(void* ptr)
  */
 void hal_delay_us(uint32_t delay)
 {
-    k_busy_wait(delay);
+   k_usleep(delay);
 }
 
 /** \brief This function delays for a number of tens of microseconds.

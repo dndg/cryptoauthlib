@@ -2,7 +2,7 @@
  * \file
  * \brief Unity tests for the cryptoauthlib Basic API
  *
- * \copyright (c) 2015-2020 Microchip Technology Inc. and its subsidiaries.
+ * \copyright (c) 2015-2026 Microchip Technology Inc. and its subsidiaries.
  *
  * \page License
  *
@@ -548,7 +548,7 @@ TEST(atca_cmd_basic_test, aes_cbc_mmt_cavp_vectors)
             {
 #ifdef ATCA_PRINTF
                 //Process read vector
-                printf("%04d\r", test_count++);
+                (void)printf("%04d\r", test_count++);
 #endif
 
                 // Load AES keys into slot
@@ -587,7 +587,7 @@ TEST(atca_cmd_basic_test, aes_cbc_mmt_cavp_vectors)
             {
 #ifdef ATCA_PRINTF
                 //Process read vector
-                printf("%04d\r", test_count++);
+                (void)printf("%04d\r", test_count++);
 #endif
 
                 // Load AES keys into slot
@@ -620,7 +620,7 @@ TEST(atca_cmd_basic_test, aes_cbc_mmt_cavp_vectors)
     fclose(rsp_file);
 
 #ifdef ATCA_PRINTF
-    printf("\n");
+    (void)printf("\n");
 #endif
 }
 #undef SIZE_OF_TEXT
@@ -638,7 +638,7 @@ t_test_case_info aes_cbc_basic_test_info[] =
 #endif
     { REGISTER_TEST_CASE(atca_cmd_basic_test, aes_cbc_encrypt_block_simple),     atca_test_cond_ta    },
     { REGISTER_TEST_CASE(atca_cmd_basic_test, aes_cbc_decrypt_block_simple),     atca_test_cond_ta    },
-#ifdef TEST_ATCAB_AES_CBC_UPDATE_EN
+#if TEST_ATCAB_AES_CBC_UPDATE_EN
     { REGISTER_TEST_CASE(atca_cmd_basic_test, aes_cbc_encrypt_update_simple),    atca_test_cond_ta    },
     { REGISTER_TEST_CASE(atca_cmd_basic_test, aes_cbc_encrypt_update_chunks),    atca_test_cond_ta    },
     { REGISTER_TEST_CASE(atca_cmd_basic_test, aes_cbc_decrypt_update_simple),    atca_test_cond_ta    },

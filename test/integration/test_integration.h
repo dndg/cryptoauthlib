@@ -2,7 +2,7 @@
  * \file
  * \brief Test CryptoAuthLib Integrations into other Libraries
  *
- * \copyright (c) 2015-2020 Microchip Technology Inc. and its subsidiaries.
+ * \copyright (c) 2015-2026 Microchip Technology Inc. and its subsidiaries.
  *
  * \page License
  *
@@ -35,7 +35,7 @@ extern "C" {
 #include "atca_test.h"
 
 #if defined(ATCA_MBEDTLS)
-extern t_test_case_info mbedtls_ecdsa_test_info[];
+extern t_test_case_info mbedtls_ecdsa_ecdh_test_info[];
 #endif
 
 /* Console function */

@@ -10,7 +10,7 @@
  *       There are differences in  the modes that they support. Refer to device
  *       datasheets for full details.
  *
- * \copyright (c) 2015-2020 Microchip Technology Inc. and its subsidiaries.
+ * \copyright (c) 2015-2026 Microchip Technology Inc. and its subsidiaries.
  *
  * \page License
  *
@@ -181,7 +181,7 @@ ATCA_STATUS calib_ecdh_enc(ATCADevice device, uint16_t key_id, const uint8_t* pu
             (void)ATCA_TRACE(status, "ECDH Failed"); break;
         }
 #if defined(ATCA_USE_CONSTANT_HOST_NONCE)
-        if ((status = calib_read_enc(device, key_id | 0x0001, 0, pms, read_key, read_key_id)) != ATCA_SUCCESS)
+        if ((status = calib_read_enc(device, key_id | 0x0001u, 0, pms, read_key, read_key_id)) != ATCA_SUCCESS)
 #else
         if ((status = calib_read_enc(device, key_id | 0x0001u, 0, pms, read_key, read_key_id, num_in)) != ATCA_SUCCESS)
 #endif

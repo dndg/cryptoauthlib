@@ -2,7 +2,7 @@
  * \file
  * \brief Provides api interfaces for accessing WPC certificates from device.
  *
- * \copyright (c) 2015-2021 Microchip Technology Inc. and its subsidiaries.
+ * \copyright (c) 2015-2026 Microchip Technology Inc. and its subsidiaries.
  *
  * \page License
  *
@@ -359,6 +359,7 @@ ATCA_STATUS wpccert_read_cert(
         }
 
         // set signature
+        buf.len = TA_SIGN_P256_SIG_SIZE;
         if (ATCA_SUCCESS != (status = atcacert_set_signature(cert_def, cert, cert_size, max_cert_size, &buf)))
         {
             status = ATCA_TRACE(status, "set signature failed");

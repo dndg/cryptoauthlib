@@ -2,7 +2,7 @@
  * \file
  * \brief Test CryptoAuthLib Integrations into other Libraries
  *
- * \copyright (c) 2015-2020 Microchip Technology Inc. and its subsidiaries.
+ * \copyright (c) 2015-2026 Microchip Technology Inc. and its subsidiaries.
  *
  * \page License
  *
@@ -30,7 +30,7 @@
 static t_test_case_info* integration_tests[] =
 {
 #ifdef ATCA_MBEDTLS
-    mbedtls_ecdsa_test_info,
+    mbedtls_ecdsa_ecdh_test_info,
 #endif
     (t_test_case_info*)NULL /* Array Termination element*/
 };

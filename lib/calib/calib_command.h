@@ -8,7 +8,7 @@
  * The command list is a superset of all device commands for this family.  The command object
  * differentiates the packet contents based on specific device type within the family.
  *
- * \copyright (c) 2015-2020 Microchip Technology Inc. and its subsidiaries.
+ * \copyright (c) 2015-2026 Microchip Technology Inc. and its subsidiaries.
  *
  * \page License
  *
@@ -85,7 +85,7 @@ typedef struct
     uint8_t  opcode;
     uint8_t  param1;                       // often same as mode
     uint16_t param2;
-    uint8_t  data[CA_MAX_PACKET_SIZE - 6]; // CA_MAX_PACKET_SIZE must accomodate data + 6bytes + crc(2bytes)
+    uint8_t  data[CA_MAX_PACKET_SIZE - 6u];// CA_MAX_PACKET_SIZE must accomodate data + 6bytes + crc(2bytes)
                                            // 6 bytes(1 byte reserved, 1 byte txsize, 1 byte opcode, 1 byte param1, 2 byte param2)
     // used for receive
     uint8_t execTime;                      // execution time of command by opcode

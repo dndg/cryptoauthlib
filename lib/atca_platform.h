@@ -2,7 +2,7 @@
  * \file
  * \brief  Configure the platform interfaces for cryptoauthlib
  *
- * \copyright (c) 2015-2020 Microchip Technology Inc. and its subsidiaries.
+ * \copyright (c) 2015-2026 Microchip Technology Inc. and its subsidiaries.
  *
  * \page License
  *
@@ -30,8 +30,10 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "atca_config.h"
+
 #if defined(ATCA_TESTS_ENABLED) || !defined(ATCA_PLATFORM_MALLOC)
-void*   hal_malloc(size_t size);
+void*   hal_malloc(size_t size); 
 void    hal_free(void* ptr);
 #else
 #define hal_malloc      ATCA_PLATFORM_MALLOC

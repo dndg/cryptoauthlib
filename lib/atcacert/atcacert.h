@@ -4,7 +4,7 @@
  *
  * These are common definitions used by all the atcacert code.
  *
- * \copyright (c) 2015-2020 Microchip Technology Inc. and its subsidiaries.
+ * \copyright (c) 2015-2026 Microchip Technology Inc. and its subsidiaries.
  *
  * \page License
  *
@@ -67,7 +67,7 @@ extern "C" {
  * +---------------+---------------+-----------------------------------------------------------------------------------------------------+
  * | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |  | | |  | |
  * | 5 bits  | 4 bits| 5 bits  | 5 bits  | 5 bits  |             16 bits           | 4 bits| 4 bits| 4 bits| 4 bits|  2  |  2   | 4 bits |
- * |  Issue  | Issue |  Issue  | Issue   | Expire  |            Signer ID          |Templa | Chain |  SN   | Format| bits| bits |Reserved|
+ * | Issue   | Issue |  Issue  | Issue   | Expire  |            Signer ID          |Templa | Chain |  SN   | Format| bits| bits |Reserved|
  * |  Year   | Month |   Day   | Hour    | Years   |                               | te ID |   ID  | Source|Version|Issue|Expire|        |
  * |         |       |         |         |         |                               |       |       |       |       |Years|Years |        |
  * +---------+-------+---------+---------+---------+-------------------------------+-------+-------+-------+-------+-----+------+--------+

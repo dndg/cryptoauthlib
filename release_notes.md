@@ -1,6 +1,77 @@
 
 # Microchip Cryptoauthlib Release Notes
 
+## Release v3.8.0 (05/05/2026)
+
+### New Features
+  - ECC206 device support added
+  - Restructured cmake build system for modular, device-specific configurations
+    - Moved device enablement options into per-module cmake files (calib, talib, pkcs11, jwt, atcacert)
+    - Removed devices.cmake; added device-specific cmake checks per module
+    - Added separate CMakeLists.txt for calib, atcacert, jwt, and pkcs11 modules
+  - Restructured test build system to align with modular cmake changes
+    - Added device-specific cmake checks for test modules (api_calib, api_talib, atcacert)
+    - Test sources are now conditionally compiled based on device selection
+  - See [talib/CHANGES.md] for details on talib module changes
+
+### Fixes
+  - License header copyright year updated for all files
+  - PKCS#11 layer fixes/updates
+    - Implemented thread-safety enhancements for the find-template cache with
+      per-session cache slots for multi-threaded robustness
+    - Updated pkcs11_config.c config parsing for device-specific selection
+    - Updated pkcs11_signature.c with proper ATCA_CA_SUPPORT and ATCA_TA_SUPPORT macro guards
+    - Updated pkcs11_token.c for volatile register usage and device-specific token identification
+    - Fixed pkcs11_cert.c x509 cert write to use volatile register when
+      TALIB_CREATE_SHARED_DATA_EN is not enabled
+  - Device-specific configuration updates
+    - Updated calib_device.h to enable device-specific config on device selection
+    - Updated calib_execution.c to enable device-specific execution time on device selection
+    - Updated kit_protocol.c to enable device-specific selection for kit protocol
+  - Build and macro protection fixes
+    - Fixed atcab_mac() to use correct macro guard CALIB_MAC_EN
+    - Added CALIB_AES_GCM_EN macro protection in cryptoauthlib.h for feature-specific inclusions
+    - Resolved ATCA_HAL_CUSTOM build issues, restoring compatibility across custom HAL configurations
+  - Fixed PyCAL bytearray handling for cal_buffer usage
+
+## Release v3.7.9 (09/05/2025)
+
+### New Features
+  - Upgraded MbedTLS CAL wrapper APIs for compatibility with Mbed TLS v3.6.3.1 (from v2.28.4)
+
+### Fixes
+  - Fixed atcacert_verify_ APIs to use correct key size macros and to utilize cal_buffer members
+  - Enhanced error handling for initialization (halinit) failures by adding appropriate hal_release calls
+  - Fixed atca_mbedtls_cert_add API to read public key using correct is_genkey check
+  - Updated hal_kit_hid_send() API to flush any pending data from HID device input buffer
+    (by reading its data) before writes
+  - Added validation of input parameters in hal_free_shared() and updated access permissions for the shared
+    memory in hal_linux.c
+  - Replaced memset calls with pkcs11_util_memset when dealing with strutures, in the PKCS#11 implementation
+  - Modified buffer size setting to use `P256 signature size` before calling atcacert_set_signature(),
+    in order to correctly read WPC certificates from ECC608 devices
+  - Fixed ATCA_MBEDTLS guards to exclude MbedTLS code when disabled
+  - Replaced `CMAKE_INSTALL_FULL_<dir>` with `CMAKE_INSTALL_<dir>` to ensure proper handling of `--prefix` and `cpack`
+  - Updated atcab_init_ext() to read the ECC608 config zone only with ATCA_NO_POLL configuration
+  - MPLAB Harmony Configurator changes
+    - Added device_conf.json file to contain the features pertintent to each of the secure elements and use this
+      as base configuration options for the selected device
+    - Updated the Configurator code generation for TNG devices selection to generate `Tester module` files as well
+  - MISRA C:2012 and CERT C checks
+    - Addressed more violations of 'REQUIRED' category for MISRA C:2012 and CERT C compliance standards
+    - Introduced file-based suppression lists to support maximum coverage for MISRA C:2012 rule checks
+      while using `MISRA Check tool` from `MPLAB Analysis tool suite`
+  - Updated Zephyr I2C HAL wrapper
+    - Integrated latest I2C driver configuration updates from Zephyr 3.6.0
+    - Now utilizes the `word_address` parameter in `hal_i2c_send()` even when the transmit buffer is empty
+      (supports cases like device wake-up)
+  - Updated hal_esp32_i2c.c to support latest ESP-IDF library
+    - Maintained existing I2C initialization and command methods for backward compatibility
+    - Note: The `i2c_config_t` fields and the `i2c_driver_install` API may be deprecated in future ESP-IDF releases.
+      Refer to the ESP-IDF I2C official documentation for latest updates.
+
+
+
 ## Release v3.7.8 (05/05/2025)
 
 ### Fixes

@@ -2,7 +2,7 @@
  * \file
  * \brief Crypto abstraction functions for external host side cryptography
  *
- * \copyright (c) 2015-2020 Microchip Technology Inc. and its subsidiaries.
+ * \copyright (c) 2015-2026 Microchip Technology Inc. and its subsidiaries.
  *
  * \page License
  *
@@ -727,17 +727,6 @@ ATCA_STATUS atcac_pk_init(
                 case ATCA_KEY_TYPE_ECCP256:
                     curve_nid = NID_X9_62_prime256v1;
                     break;
-        #if ATCA_TA_SUPPORT
-                case TA_KEY_TYPE_ECCP224:
-                    curve_nid = NID_secp224r1;
-                    break;
-                case TA_KEY_TYPE_ECCP384:
-                    curve_nid = NID_secp384r1;
-                    break;
-                case TA_KEY_TYPE_ECCP521:
-                    curve_nid = NID_secp521r1;
-                    break;
-        #endif
                 default:
                     EVP_PKEY_free((EVP_PKEY*)ctx->ptr);
                     ret = ATCA_BAD_PARAM;
@@ -943,11 +932,13 @@ ATCA_STATUS atcac_pk_sign(
     const uint8_t *      digest,
     size_t               dig_len,
     uint8_t*             signature,
+    size_t               sig_buf_size,
     size_t*              sig_len
     )
 {
     ATCA_STATUS status = ATCA_BAD_PARAM;
     int ret = 0;
+    (void)sig_buf_size;
 
     if ((NULL != ctx) && (NULL != ctx->ptr))
     {
@@ -1424,6 +1415,13 @@ void atcac_aes_cmac_ctx_free(struct atcac_aes_cmac_ctx * ctx)
 void atcac_pk_ctx_free(struct atcac_pk_ctx * ctx)
 {
     hal_free(ctx);
+}
+#endif
+
+#if ATCACERT_COMPCERT_EN
+ATCA_STATUS atcac_sw_cert_add(void * cert, const struct atcacert_def_s * cert_def)
+{
+    return ATCA_SUCCESS;
 }
 #endif
 

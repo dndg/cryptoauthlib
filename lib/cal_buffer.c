@@ -2,7 +2,7 @@
  * \file
  * \brief Cryptoauthlib buffer management system
  *
- * \copyright (c) 2023 Microchip Technology Inc. and its subsidiaries.
+ * \copyright (c) 2015-2026 Microchip Technology Inc. and its subsidiaries.
  *
  * \page License
  *
@@ -723,11 +723,11 @@ void cal_buf_print(cal_buffer * buf)
 
     if (NULL == buf)
     {
-        printf("Buffer is NULL\n");
+        (void)printf("Buffer is NULL\n");
     }
     else if (NULL == buf->buf)
     {
-        printf("Buffer is inconsistent\n");
+        (void)printf("Buffer is inconsistent\n");
     }
     else
     {
@@ -735,7 +735,7 @@ void cal_buf_print(cal_buffer * buf)
         {
             for (i = 0; i < buf->len; i++)
             {
-                printf("%02x ", buf->buf[i]);
+                (void)printf("%02x ", buf->buf[i]);
             }
 #if MULTIPART_BUF_EN
             buf = buf->next;
