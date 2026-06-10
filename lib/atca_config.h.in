@@ -25,7 +25,7 @@
 #cmakedefine ATCA_SHA105_SUPPORT
 
 /* Linked device support library */
-#cmakedefine01 ATCA_TA_SUPPORT
+#cmakedefine ATCA_TA_SUPPORT
 
 /** Device Override - Library Assumes ATECC608B support in checks */
 #cmakedefine ATCA_ATECC608A_SUPPORT
@@ -112,7 +112,7 @@ selected plus however additional slots one would like */
 
 /** Atcacert module configurations */
 #cmakedefine01 ATCACERT_COMPCERT_EN
-#cmakedefine01 ATCACERT_FULLSTOREDCERT_EN 
+#cmakedefine01 ATCACERT_FULLSTOREDCERT_EN
 
 /** Enable ATCACERT Full Certificate Integration */
 #cmakedefine01 ATCACERT_INTEGRATION_EN
